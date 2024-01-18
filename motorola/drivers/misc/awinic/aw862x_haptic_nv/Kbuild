@@ -3,6 +3,10 @@ EXTRA_CFLAGS += -Wall
 EXTRA_CFLAGS += -I$(KERNEL_SRC)/../sm8475-modules/motorola/include \
 		-I$(KERNEL_SRC)/../sm8475-modules/motorola/drivers/misc/awinic/aw862x_haptic_nv
 
+ifneq (,$(findstring kobe, $(TARGET_PRODUCT)))
+       EXTRA_CFLAGS += -DFCNT_VIBRATION
+endif
+
 obj-m += aw862x_haptic_nv.o
 
 aw862x_haptic_nv-objs += haptic_nv.o

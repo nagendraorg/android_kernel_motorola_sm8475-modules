@@ -112,8 +112,6 @@ else ifneq ($(findstring hiphic, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_HIPHIC
 else ifneq ($(findstring hiphi, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_HIPHI
-else ifneq ($(findstring li, $(USE_TARGET_PRODUCT)), )
-        EXTRA_CFLAGS += -DPRODUCT_LI
 else ifneq ($(findstring eqs, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_EQS
 else ifneq ($(findstring tundra, $(USE_TARGET_PRODUCT)), )
@@ -148,6 +146,8 @@ else ifneq ($(findstring malmo, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_MALMO
 else ifneq ($(findstring tank, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_TANK
+else ifneq ($(findstring li, $(USE_TARGET_PRODUCT)), )
+        EXTRA_CFLAGS += -DPRODUCT_LI
 endif
 $(warning "william EXTRA_CFLAGS = $(EXTRA_CFLAGS)")
 
