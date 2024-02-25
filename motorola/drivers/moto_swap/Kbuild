@@ -1,6 +1,5 @@
-ZRAM_SRC = zram-$(VERSION).$(PATCHLEVEL)
-
-$(warning moto_swap - zram src folder = $(ZRAM_SRC))
+ZRAM_SRC = zram-5.10
+EXTRA_CFLAGS += -DCONFIG_ZRAM_5_10
 
 ifeq ($(VERSION), 6)
 EXTRA_CFLAGS += -Wframe-larger-than=4096
