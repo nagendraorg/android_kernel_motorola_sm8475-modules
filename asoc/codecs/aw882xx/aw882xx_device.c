@@ -420,6 +420,11 @@ static void aw_dev_fade_in(struct aw_device *aw_dev)
 	struct aw_volume_desc *desc = &aw_dev->volume_desc;
 	int fade_in_vol = desc->ctl_volume;
 
+	if (!aw_dev->fade_en) {
+		aw882xx_dev_set_volume(aw_dev, fade_in_vol);
+		return;
+	}
+
 	if (fade_step == 0 || g_fade_in_time == 0) {
 		aw882xx_dev_set_volume(aw_dev, fade_in_vol);
 		return;
