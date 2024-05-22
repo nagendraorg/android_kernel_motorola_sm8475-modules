@@ -756,6 +756,17 @@ static int aw882xx_volume_put(struct snd_kcontrol *kcontrol,
 	compared_vol = AW_GET_MAX_VALUE(vol_desc->ctl_volume,
 						vol_desc->monitor_volume);
 
+	// here we assume speakerhelper will set value bigger than 200 when
+	// ramp started, and set 0 when ramp ended. If it's not true, pls
+	// don't use ramp_in_process for any logic control
+	if ((value > 200) && (aw882xx->aw_pa->ramp_in_process == 0)){
+		aw_dev_info(aw882xx->dev, "ramp started");
+		aw882xx->aw_pa->ramp_in_process = 1;
+	} else if ((value == 0) && (aw882xx->aw_pa->ramp_in_process == 1)){
+		aw_dev_info(aw882xx->dev, "ramp finished");
+		aw882xx->aw_pa->ramp_in_process = 0;
+	}
+
 	aw882xx_dev_set_volume(aw882xx->aw_pa, compared_vol);
 
 	return 0;
