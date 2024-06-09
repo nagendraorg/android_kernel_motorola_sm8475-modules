@@ -17,6 +17,7 @@ focaltech_v3_4-objs += focaltech_spi.o
 focaltech_v3_4-objs += focaltech_test/focaltech_test.o
 focaltech_v3_4-objs += focaltech_test/focaltech_test_ini.o
 focaltech_v3_4-objs += focaltech_ts_config.o
+focaltech_v3_4-objs += focaltech_debug.o
 
 ifneq ($(filter ft3681,$(CONFIG_INPUT_FOCAL_IC_NAME)),)
 	EXTRA_CFLAGS += -DCONFIG_FTS_IC_FT3681
@@ -102,11 +103,11 @@ else
 USE_TARGET_PRODUCT := $(TARGET_PRODUCT)
 endif
 
-ifneq ($(findstring bangkk, $(USE_TARGET_PRODUCT)), )
+ifneq ($(filter bangkk%, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_BANGKK
-else ifneq ($(findstring avatrn, $(USE_TARGET_PRODUCT)), )
+else ifneq ($(filter avatrn%, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_AVATRN
 endif
 
-KBUILD_EXTRA_SYMBOLS += $(OUT_DIR)/Module.symvers
+KBUILD_EXTRA_SYMBOLS += $(CURDIR)/../../kernel/msm-$(MODULE_KERNEL_VERSION)/Module.symvers
 KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../../../mmi_info/$(GKI_OBJ_MODULE_DIR)/Module.symvers

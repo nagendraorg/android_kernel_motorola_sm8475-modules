@@ -22,11 +22,19 @@ endif
 
 obj-m += ets_fps_mmi.o
 
-ifneq (,$(or $(findstring doha,$(TARGET_PRODUCT)),$(findstring sofia,$(TARGET_PRODUCT)),$(findstring rav,$(TARGET_PRODUCT))))
+ifneq ($(filter doha%, $(TARGET_PRODUCT)),)
 EXTRA_CFLAGS += -DCONFIG_INPUT_EGISTEC_FPS_POSE=0
 else
 EXTRA_CFLAGS += -DCONFIG_INPUT_EGISTEC_FPS_POSE=270
 endif
+
+ifneq ($(filter sofia%, $(TARGET_PRODUCT)),)
+EXTRA_CFLAGS += -DCONFIG_INPUT_EGISTEC_FPS_POSE=0
+endif
+ifneq ($(filter rav%, $(TARGET_PRODUCT)),)
+EXTRA_CFLAGS += -DCONFIG_INPUT_EGISTEC_FPS_POSE=0
+endif
+
 ifneq ($(filter m y, $(CONFIG_EGIS_DISPLAY_SPEED_UP)),)
 EXTRA_CFLAGS += -DCONFIG_EGIS_DISPLAY_SPEED_UP
 endif
