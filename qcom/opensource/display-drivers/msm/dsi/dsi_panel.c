@@ -2005,7 +2005,6 @@ const char *cmd_set_prop_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-dfps-90-command",
 	"qcom,mdss-dsi-dfps-120-command",
 	"qcom,mdss-dsi-dfps-144-command",
-	"qcom,mdss-dsi-hbm-on-command",
 	"qcom,mdss-dsi-hbm-fod-on-command",
 	"qcom,mdss-dsi-hbm-off-command",
 	"qcom,mdss-dsi-dc-on-command",
@@ -2043,7 +2042,6 @@ const char *cmd_set_state_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-dfps-90-command-state",
 	"qcom,mdss-dsi-dfps-120-command-state",
 	"qcom,mdss-dsi-dfps-144-command-state",
-	"qcom,mdss-dsi-hbm-on-command-state",
 	"qcom,mdss-dsi-hbm-fod-on-command-state",
 	"qcom,mdss-dsi-hbm-off-command-state",
 	"qcom,mdss-dsi-dc-on-command-state",
@@ -3814,7 +3812,7 @@ static void dsi_panel_update_hbm_cmd(struct dsi_panel_cmd_set *cmd_set,
 }
 
 static int dsi_panel_set_hbm_status(struct dsi_panel *panel,
-				    bool fod_hbm_status, bool hbm_status)
+				    bool fod_hbm_status)
 {
 	struct dsi_display_mode_priv_info *priv_info;
 	struct dsi_panel_cmd_set *cmd_set;
@@ -3835,9 +3833,7 @@ static int dsi_panel_set_hbm_status(struct dsi_panel *panel,
 	bl_level = panel->bl_config.real_bl_level;
 	alpha_val = 0;
 
-	if (hbm_status) {
-		type = DSI_CMD_SET_HBM_ON;
-	} else if (fod_hbm_status) {
+	if (fod_hbm_status) {
 		type = DSI_CMD_SET_HBM_FOD_ON;
 		if (bl_level < panel->lhbm_config.alpha_size)
 			alpha_val = panel->lhbm_config.alpha[bl_level];
@@ -3880,52 +3876,6 @@ static int dsi_panel_set_dc_dimming_status(struct dsi_panel *panel, bool status)
 	return rc;
 }
 
-static ssize_t sysfs_hbm_read(struct device *dev,
-			      struct device_attribute *attr,
-			      char *buf)
-{
-	struct dsi_display *display = dev_get_drvdata(dev);
-	struct dsi_panel *panel = display->panel;
-	bool status;
-
-	mutex_lock(&panel->panel_lock);
-	status = panel->hbm_enabled;
-	mutex_unlock(&panel->panel_lock);
-
-	return snprintf(buf, PAGE_SIZE, "%u\n", status);
-}
-
-static ssize_t sysfs_hbm_write(struct device *dev,
-			       struct device_attribute *attr,
-			       const char *buf, size_t count)
-{
-	struct dsi_display *display = dev_get_drvdata(dev);
-	struct dsi_panel *panel = display->panel;
-	bool status;
-	int rc;
-
-	rc = kstrtobool(buf, &status);
-	if (rc)
-		return rc;
-
-	mutex_lock(&panel->panel_lock);
-	if (panel->hbm_enabled == status)
-		goto exit;
-
-	rc = dsi_panel_set_hbm_status(panel, panel->fod_hbm_enabled, status);
-	if (rc)
-		goto exit;
-
-	panel->hbm_enabled = status;
-
-exit:
-	mutex_unlock(&panel->panel_lock);
-
-	return rc ?: count;
-}
-
-static DEVICE_ATTR(dsi_display_hbm, 0644, sysfs_hbm_read, sysfs_hbm_write);
-
 static ssize_t sysfs_fod_hbm_read(struct device *dev,
 				  struct device_attribute *attr,
 				  char *buf)
@@ -3958,7 +3908,7 @@ static ssize_t sysfs_fod_hbm_write(struct device *dev,
 	if (panel->fod_hbm_enabled == status)
 		goto exit;
 
-	rc = dsi_panel_set_hbm_status(panel, status, panel->hbm_enabled);
+	rc = dsi_panel_set_hbm_status(panel, status);
 	if (rc)
 		goto exit;
 
@@ -4019,7 +3969,6 @@ exit:
 static DEVICE_ATTR(dsi_display_dc, 0644, sysfs_dc_dimming_read, sysfs_dc_dimming_write);
 
 static struct attribute *panel_attrs[] = {
-	&dev_attr_dsi_display_hbm.attr,
 	&dev_attr_fod_hbm.attr,
 	&dev_attr_dsi_display_dc.attr,
 	NULL,
